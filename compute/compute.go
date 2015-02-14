@@ -10,7 +10,7 @@ import (
 )
 
 import (
-    "../functions"
+    "github.com/wylst/calc.go/functions"
 )
 
 func Evaluate(exp string) float64 {

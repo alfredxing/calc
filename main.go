@@ -8,7 +8,7 @@ import (
 )
 
 import (
-    "./compute"
+    "github.com/wylst/calc.go/compute"
 )
 
 import (
