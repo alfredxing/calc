@@ -187,11 +187,11 @@ func subcompute(nums []string, ops []string, level int, reverse bool) (float64, 
         case "^":
             res = math.Pow(n1, n2)
         case "*":
-                res = n1 * n2
+            res = n1 * n2
         case "/":
             res = n1 / n2
         case "+":
-                res = n1 + n2
+            res = n1 + n2
         case "-":
             res = n1 - n2
         }
