@@ -13,10 +13,21 @@ import (
 )
 
 func main() {
+    if len(os.Args) > 1 {
+        input := strings.Replace(strings.Join(os.Args[1:], ""), " ", "", -1)
+        fmt.Printf("%s\n", strconv.FormatFloat(parens(input), 'G', -1, 64))
+        return
+    }
+
     fmt.Print("> ")
     scanner := bufio.NewScanner(os.Stdin)
     for scanner.Scan() {
-        text := scanner.Text()
+        text := strings.Replace(scanner.Text(), " ", "", -1)
+
+        if text == "exit" || text == "quit" {
+            return
+        }
+
         fmt.Printf("%s\n", strconv.FormatFloat(parens(text), 'G', -1, 64))
         fmt.Print("> ")
     }
