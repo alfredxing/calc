@@ -4,18 +4,13 @@ import (
     "../"
 )
 
-var Names = []string{}
+var Names = map[string]bool{}
 
 func Register(op *operators.Operator) {
     operators.Register(op)
-    Names = append(Names, op.Name)
+    Names[op.Name] = true
 }
 
 func IsFunction(str string) bool {
-    for _, name := range Names {
-        if str == name {
-            return true
-        }
-    }
-    return false
+    return Names[str]
 }

@@ -28,6 +28,9 @@ var exps = map[string]float64{
     "abs(-3/2)": 1.5,
     "1+2sin(-1024)tan(acos(1))^2": 1,
     "tan(10)cos(20)": 0.2645844,
+    "2(e^3)": 40.1710738464,
+    "sin(pi*π)": -0.430301217,
+    "3π": 9.42477796,
 }
 const DELTA = 0.000001
 
@@ -43,5 +46,26 @@ func TestEvaluate(t *testing.T) {
                 strconv.FormatFloat(expected, 'G', -1, 64)
             t.Error(message)
         }
+    }
+}
+
+func BenchmarkEvaluate(b *testing.B) {
+    tests := []string{
+        "π",
+        "1+2^3^2",
+        "2^(3+4)",
+        "2^(3/(1+2))",
+        "2^2(1+3)",
+        "1+(-1)^2",
+        "3*(3-(5+6)^12)*23^3-5^23",
+        "2^3^2",
+        "ln(3^15)",
+        "sqrt(10)",
+        "abs(-3/2)",
+        "1+2sin(-1024)tan(acos(1))^2",
+        "tan(10)cos(20)",
+    }
+    for i := 0; i < b.N; i++ {
+        Evaluate(tests[i % len(tests)])
     }
 }

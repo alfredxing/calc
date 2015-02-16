@@ -12,6 +12,7 @@ import (
 import (
     "../operators"
     "../operators/functions"
+    "../constants"
 )
 
 func Evaluate(in string) (float64, error) {
@@ -27,9 +28,18 @@ ScanLoop:
         switch {
         case tok == token.EOF:
             break ScanLoop
+        case constants.IsConstant(lit):
+            floats.Push(constants.GetValue(lit))
+            if prev == token.RPAREN || isOperand(prev) {
+                evalUnprecedenced("*", ops, floats)
+            }
         case isOperand(tok):
-            floats.Push(parseFloat(lit))
-            if prev == token.RPAREN {
+            val, err := parseFloat(lit)
+            if err != nil {
+                return 0, err
+            }
+            floats.Push(val)
+            if prev == token.RPAREN || constants.IsConstant(prev.String()) {
                 evalUnprecedenced("*", ops, floats)
             }
         case functions.IsFunction(lit):
@@ -152,12 +162,12 @@ func isNegation(tok token.Token, prev token.Token) bool {
         (prev == token.ILLEGAL || isOperator(prev.String()) || prev == token.LPAREN)
 }
 
-func parseFloat(lit string) float64 {
+func parseFloat(lit string) (float64, error) {
     f, err := strconv.ParseFloat(lit, 64)
     if err != nil {
-        panic("Cannot parse recognized float: " + lit)
+        return 0, errors.New("Cannot parse recognized float: " + lit)
     }
-    return f
+    return f, nil
 }
 
 func parseOperator(lit string) *operators.Operator {
@@ -172,4 +182,3 @@ func initScanner(in string) scanner.Scanner {
     s.Init(file, src, nil, 0)
     return s
 }
-

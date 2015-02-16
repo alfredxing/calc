@@ -1,7 +1,6 @@
 package operators
 
 var Ops = map[string]*Operator{}
-var Names = []string{}
 
 const (
     L = 0
@@ -18,21 +17,17 @@ type Operator struct {
 
 func Register(op *Operator) {
     Ops[op.Name] = op
-    Names = append(Names, op.Name)
 }
 
 func IsOperator(str string) bool {
-    for _, name := range Names {
-        if str == name {
-            return true
-        }
-    }
-    return false
+    _, exist := Ops[str]
+    return exist
 }
 
 func FindOperatorFromString(str string) *Operator {
-    if IsOperator(str) {
-        return Ops[str]
+    op, exist := Ops[str]
+    if exist {
+        return op
     }
     return nil
 }
