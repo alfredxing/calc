@@ -1,9 +1,6 @@
 ## calc
 A simple, fast, and intuitive command-line calculator written in Go.
 
-### Introduction
-A deviation from the org's usual web utilities, the idea for calc came up because I was frustrated with using [the alternatives](#why-not). Also because I wanted to learn Go!
-
 ### Install
 Install calc as you would any other Go program:
 ```
