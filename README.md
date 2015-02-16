@@ -4,7 +4,7 @@ A simple, fast, and intuitive command-line calculator written in Go.
 ### Install
 Install calc as you would any other Go program:
 ```
-go get github.com/wylst/calc
+go get github.com/alfredxing/calc
 ```
 
 ### Usage
