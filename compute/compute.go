@@ -1,8 +1,10 @@
 package compute
 
 import (
-    "fmt"
+    // "fmt"
+    "strings"
     "strconv"
+    "errors"
     "go/scanner"
     "go/token"
 )
@@ -12,7 +14,7 @@ import (
     "../operators/functions"
 )
 
-func Evaluate(in string) float64 {
+func Evaluate(in string) (float64, error) {
     floats := NewFloatStack()
     ops := NewStringStack()
     s := initScanner(in)
@@ -47,30 +49,56 @@ ScanLoop:
             }
             ops.Push(tok.String())
         case tok == token.RPAREN:
-            for ops.Pos >= 0 && ops.Top() != "(" {
-                evalOp(ops.Pop(), floats)
+            for ops.Pos >= 0 && ops.SafeTop() != "(" {
+                err := evalOp(ops.SafePop(), floats)
+                if err != nil {
+                    return 0, err
+                }
             }
-            ops.Pop()
-            if functions.IsFunction(ops.Top()) {
-                evalOp(ops.Pop(), floats)
+            _, err := ops.Pop()
+            if err != nil {
+                return 0, errors.New("Can't find matching parenthesis!")
             }
+            if ops.Pos >= 0 {
+                if functions.IsFunction(ops.SafeTop()) {
+                    err := evalOp(ops.SafePop(), floats)
+                    if err != nil {
+                        return 0, err
+                    }
+                }
+            }
+        case tok == token.SEMICOLON:
+        default:
+            inspect := tok.String()
+            if strings.TrimSpace(lit) != "" {
+                inspect += " (`" + lit + "`)"
+            }
+            return 0, errors.New("Unrecognized token " + inspect + " in expression")
         }
         prev = tok
     }
 
-    fmt.Println(floats)
-    fmt.Println(ops)
+    // fmt.Println(floats)
+    // fmt.Println(ops)
 
     for ops.Pos >= 0 {
-        evalOp(ops.Pop(), floats)
+        op, _ := ops.Pop()
+        err := evalOp(op, floats)
+        if err != nil {
+            return 0, err
+        }
     }
 
-    return floats.Top()
+    res, err := floats.Top()
+    if err != nil {
+        return 0, errors.New("Expression could not be parsed!")
+    }
+    return res, nil
 }
 
 func evalUnprecedenced(op string, ops *StringStack, floats *FloatStack) {
-    for ops.Pos >= 0 && shouldPopNext(op, ops.Top()) {
-        evalOp(ops.Pop(), floats)
+    for ops.Pos >= 0 && shouldPopNext(op, ops.SafeTop()) {
+        evalOp(ops.SafePop(), floats)
     }
     ops.Push(op)
 }
@@ -90,16 +118,25 @@ func shouldPopNext(n1 string, n2 string) bool {
     return op1.Precedence < op2.Precedence
 }
 
-func evalOp(opName string, floats *FloatStack) {
+func evalOp(opName string, floats *FloatStack) error {
     op := operators.FindOperatorFromString(opName)
+    if op == nil {
+        return errors.New("Either unmatched paren or unrecognized operator")
+    }
 
     var args = make([]float64, op.Args)
     for i := op.Args - 1; i >= 0; i-- {
-        args[i] = floats.Pop()
+        arg, err := floats.Pop()
+        if err != nil {
+            return errors.New("Not enough arguments to operator!")
+        }
+        args[i] = arg
     }
 
-    fmt.Printf("Computing %s of %q\n", opName, args)
+    // fmt.Printf("Computing %s of %q\n", opName, args)
     floats.Push(op.Operation(args))
+
+    return nil
 }
 
 func isOperand(tok token.Token) bool {

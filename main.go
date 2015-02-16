@@ -18,7 +18,12 @@ import (
 func main() {
     if len(os.Args) > 1 {
         input := strings.Replace(strings.Join(os.Args[1:], ""), " ", "", -1)
-        fmt.Printf("%s\n", strconv.FormatFloat(compute.Evaluate(input), 'G', -1, 64))
+        res, err := compute.Evaluate(input)
+        if err != nil {
+            fmt.Println("Error: " + err.Error())
+            return
+        }
+        fmt.Printf("%s\n", strconv.FormatFloat(res, 'G', -1, 64))
         return
     }
 
@@ -40,7 +45,13 @@ func main() {
         if text == "exit" || text == "quit" {
             break
         }
-        fmt.Printf("%s\n", strconv.FormatFloat(compute.Evaluate(text), 'G', -1, 64))
+
+        res, err := compute.Evaluate(text)
+        if err != nil {
+            fmt.Println("Error: " + err.Error())
+            continue
+        }
+        fmt.Printf("%s\n", strconv.FormatFloat(res, 'G', -1, 64))
     }
 }
 

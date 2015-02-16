@@ -33,8 +33,10 @@ const DELTA = 0.000001
 
 func TestEvaluate(t *testing.T) {
     for expression, expected := range exps {
-        res := Evaluate(expression)
-        if math.Abs(res - expected) > DELTA {
+        res, err := Evaluate(expression)
+        if err != nil {
+            t.Error(err)
+        } else if math.Abs(res - expected) > DELTA {
             message := expression + " failed: actual value " +
                 strconv.FormatFloat(res, 'G', -1, 64) +
                 " differs from expected value " +
