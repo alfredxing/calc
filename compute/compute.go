@@ -2,184 +2,137 @@ package compute
 
 import (
     "fmt"
-    "strings"
-    "unicode"
     "strconv"
-    "math"
-    "errors"
+    "go/scanner"
+    "go/token"
 )
 
 import (
-    "github.com/wylst/calc.go/functions"
+    "../operators"
+    "../operators/functions"
 )
 
-func Evaluate(exp string) float64 {
-    for i := 0; i < len(exp); i++ {
-        if exp[i] == '(' {
-            var inner string
-            var j int
-            open := 1
-            for j = i+1; open > 0; j++ {
-                if exp[j] == ')' {
-                    open--
-                } else if exp[j] == '(' {
-                    open++
-                }
-                inner += string(exp[j])
-            }
-            res := Evaluate(inner[:len(inner)-1])
-            insert := strconv.FormatFloat(res, 'f', -1, 64)
+func Evaluate(in string) float64 {
+    floats := NewFloatStack()
+    ops := NewStringStack()
+    s := initScanner(in)
 
-            if i > 0 && unicode.IsNumber(rune(exp[i-1])) {
-                insert = "*" + insert
-            }
-            if j < len(exp) && unicode.IsNumber(rune(exp[j])) {
-                insert = insert + "*"
-            }
+    var prev token.Token = token.ILLEGAL
 
-            exp = exp[0:i] + insert + exp[j:]
+ScanLoop:
+    for {
+        _, tok, lit := s.Scan()
+        switch {
+        case tok == token.EOF:
+            break ScanLoop
+        case isOperand(tok):
+            floats.Push(parseFloat(lit))
+            if prev == token.RPAREN {
+                evalUnprecedenced("*", ops, floats)
+            }
+        case functions.IsFunction(lit):
+            if isOperand(prev) || prev == token.RPAREN {
+                evalUnprecedenced("*", ops, floats)
+            }
+            ops.Push(lit)
+        case isOperator(tok.String()):
+            op := tok.String()
+            if isNegation(tok, prev) {
+                op = "neg"
+            }
+            evalUnprecedenced(op, ops, floats)
+        case tok == token.LPAREN:
+            if isOperand(prev) {
+                evalUnprecedenced("*", ops, floats)
+            }
+            ops.Push(tok.String())
+        case tok == token.RPAREN:
+            for ops.Pos >= 0 && ops.Top() != "(" {
+                evalOp(ops.Pop(), floats)
+            }
+            ops.Pop()
+            if functions.IsFunction(ops.Top()) {
+                evalOp(ops.Pop(), floats)
+            }
         }
+        prev = tok
     }
 
-    exp = functions.Process(exp)
+    fmt.Println(floats)
+    fmt.Println(ops)
 
-    res, err := parseOperators(exp, 0)
-    if err != nil {
-        fmt.Println(err)
-        return 0
+    for ops.Pos >= 0 {
+        evalOp(ops.Pop(), floats)
     }
-    return res
+
+    return floats.Top()
 }
 
-func parseOperators(exp string, level int) (float64, error) {
-    if level == 0 && strings.ContainsAny(exp, "+-") {
-        nums, ops := args(exp, []rune{'+', '-'})
-
-        if len(ops) == len(nums) && strings.HasPrefix(exp, "-") {
-            nums = append([]string{"0"}, nums...)
-        }
-
-        for i, num := range nums {
-            if !unicode.IsNumber(rune(num[len(num) - 1])) {
-                newNum := nums[i] + ops[i] + nums[i+1]
-                nums = append(append(nums[:i], newNum), nums[i+2:]...)
-                ops = append(ops[:i], ops[i+1:]...)
-            }
-        }
-
-        if len(ops) >= len(nums) {
-            return 0, errors.New("Not evaluatable: " + exp)
-        }
-
-        if len(nums) == 1 {
-            res, err := parseOperators(nums[0], 1)
-            if err != nil {
-                return 0, err
-            }
-            nums[0] = strconv.FormatFloat(res, 'f', -1, 64)
-        }
-
-        res, err := compute(nums, ops, 1, false)
-        if err != nil {
-            return 0, err
-        }
-        return res, nil
-    } else if level <= 1 && strings.ContainsAny(exp, "*/") {
-        nums, ops := args(exp, []rune{'*', '/'})
-
-        if len(ops) >= len(nums) {
-            return 0, errors.New("Not evaluatable: " + exp)
-        }
-
-        res, err := compute(nums, ops, 2, false)
-        if err != nil {
-            return 0, err
-        }
-        return res, nil
-    } else if level <= 2 && strings.Contains(exp, "^") {
-        nums, ops := args(exp, []rune{'^'})
-
-        if len(ops) >= len(nums) {
-            return 0, errors.New("Not evaluatable: " + exp)
-        }
-
-        res, err := compute(nums, ops, 3, true)
-        if err != nil {
-            return 0, err
-        }
-        return res, nil
-    } else {
-        res, err := strconv.ParseFloat(exp, 64)
-        return res, err
+func evalUnprecedenced(op string, ops *StringStack, floats *FloatStack) {
+    for ops.Pos >= 0 && shouldPopNext(op, ops.Top()) {
+        evalOp(ops.Pop(), floats)
     }
+    ops.Push(op)
 }
 
-func args(exp string, symbols []rune) ([]string, []string) {
-    nums := strings.FieldsFunc(exp, func (r rune) bool {
-        for _, symbol := range symbols {
-            if r == symbol {
-                return true
-            }
-        }
+func shouldPopNext(n1 string, n2 string) bool {
+    if !isOperator(n2) {
         return false
-    })
-    ops := strings.FieldsFunc(exp, func (r rune) bool {
-        for _, symbol := range symbols {
-            if r == symbol {
-                return false
-            }
-        }
-        return true
-    })
-    return nums, ops
-}
-
-func compute(nums []string, ops []string, level int, reverse bool) (float64, error) {
-    for len(nums) > 1 {
-        var op string
-        var n1, n2 float64
-        var err1, err2 error
-        if !reverse {
-            op = ops[0]
-            n1, err1 = parseOperators(nums[0], level)
-            n2, err2 = parseOperators(nums[1], level)
-        } else {
-            op = ops[len(ops)-1]
-            n1, err1 = parseOperators(nums[len(nums)-2], level)
-            n2, err2 = parseOperators(nums[len(nums)-1], level)
-        }
-
-        if err1 != nil {
-            return 0, errors.New(err1.Error())
-        }
-        if err2 != nil {
-            return 0, errors.New(err2.Error())
-        }
-
-        var res float64
-        switch op {
-        case "^":
-            res = math.Pow(n1, n2)
-        case "*":
-            res = n1 * n2
-        case "/":
-            res = n1 / n2
-        case "+":
-            res = n1 + n2
-        case "-":
-            res = n1 - n2
-        }
-
-        if reverse {
-            nums[len(nums)-2] = strconv.FormatFloat(res, 'f', -1, 64)
-            nums = nums[0:len(nums)-1]
-            ops = ops[0:len(ops)-1]
-        } else {
-            nums[1] = strconv.FormatFloat(res, 'f', -1, 64)
-            nums = append(nums[:0], nums[1:]...)
-            ops = append(ops[:0], ops[1:]...)
-        }
     }
-    res, _ := strconv.ParseFloat(nums[0], 64)
-    return res, nil
+    if n1 == "neg" {
+        return false
+    }
+    op1 := parseOperator(n1)
+    op2 := parseOperator(n2)
+    if op1.Associativity == operators.L {
+        return op1.Precedence <= op2.Precedence
+    }
+    return op1.Precedence < op2.Precedence
 }
+
+func evalOp(opName string, floats *FloatStack) {
+    op := operators.FindOperatorFromString(opName)
+
+    var args = make([]float64, op.Args)
+    for i := op.Args - 1; i >= 0; i-- {
+        args[i] = floats.Pop()
+    }
+
+    fmt.Printf("Computing %s of %q\n", opName, args)
+    floats.Push(op.Operation(args))
+}
+
+func isOperand(tok token.Token) bool {
+    return tok == token.FLOAT || tok == token.INT
+}
+
+func isOperator(lit string) bool {
+    return operators.IsOperator(lit)
+}
+
+func isNegation(tok token.Token, prev token.Token) bool {
+    return tok == token.SUB &&
+        (prev == token.ILLEGAL || isOperator(prev.String()) || prev == token.LPAREN)
+}
+
+func parseFloat(lit string) float64 {
+    f, err := strconv.ParseFloat(lit, 64)
+    if err != nil {
+        panic("Cannot parse recognized float: " + lit)
+    }
+    return f
+}
+
+func parseOperator(lit string) *operators.Operator {
+    return operators.FindOperatorFromString(lit)
+}
+
+func initScanner(in string) scanner.Scanner {
+    var s scanner.Scanner
+    src := []byte(in)
+    fset := token.NewFileSet()
+    file := fset.AddFile("", fset.Base(), len(src))
+    s.Init(file, src, nil, 0)
+    return s
+}
+

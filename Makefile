@@ -1,4 +1,4 @@
 all:
 	go build -o calc
 test:
-	go test ./...
+	go test ./compute
