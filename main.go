@@ -8,7 +8,7 @@ import (
 )
 
 import (
-    "./compute"
+    "github.com/alfredxing/calc/compute"
 )
 
 import (

@@ -1,7 +1,6 @@
 package compute
 
 import (
-    // "fmt"
     "strings"
     "strconv"
     "errors"
@@ -10,9 +9,9 @@ import (
 )
 
 import (
-    "../operators"
-    "../operators/functions"
-    "../constants"
+    "github.com/alfredxing/calc/operators"
+    "github.com/alfredxing/calc/operators/functions"
+    "github.com/alfredxing/calc/constants"
 )
 
 func Evaluate(in string) (float64, error) {
@@ -88,9 +87,6 @@ ScanLoop:
         prev = tok
     }
 
-    // fmt.Println(floats)
-    // fmt.Println(ops)
-
     for ops.Pos >= 0 {
         op, _ := ops.Pop()
         err := evalOp(op, floats)
@@ -143,7 +139,6 @@ func evalOp(opName string, floats *FloatStack) error {
         args[i] = arg
     }
 
-    // fmt.Printf("Computing %s of %q\n", opName, args)
     floats.Push(op.Operation(args))
 
     return nil
