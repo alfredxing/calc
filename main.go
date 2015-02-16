@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -38,6 +39,10 @@ func main() {
 	for {
 		text, err := term.ReadLine()
 		if err != nil {
+			if err == io.EOF {
+				// Quit without error on Ctrl^D
+				break
+			}
 			panic(err)
 		}
 
