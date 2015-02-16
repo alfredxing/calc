@@ -4,4 +4,7 @@ go:
   - 1.3
   - tip
 
+install:
+  - go get golang.org/x/crypto/ssh/terminal
+
 script: go test -v ./...

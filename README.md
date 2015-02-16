@@ -1,4 +1,7 @@
 ## calc
+
+[![Build Status](https://travis-ci.org/alfredxing/calc.svg?branch=master)](https://travis-ci.org/alfredxing/calc)
+
 A simple, fast, and intuitive command-line calculator written in Go.
 
 ### Install
