@@ -1,6 +1,6 @@
 all:
 	go build -o calc
 test:
-	go test ./compute
+	go test -v ./...
 benchmark:
-	go test -bench ./compute
+	go test -bench . ./...
