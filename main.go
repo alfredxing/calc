@@ -16,6 +16,9 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
+// Stores the state of the terminal before making it raw
+var regularState *terminal.State
+
 func main() {
 	if len(os.Args) > 1 {
 		input := strings.Replace(strings.Join(os.Args[1:], ""), " ", "", -1)
@@ -28,11 +31,12 @@ func main() {
 		return
 	}
 
-	oldState, err := terminal.MakeRaw(0)
+	var err error
+	regularState, err = terminal.MakeRaw(0)
 	if err != nil {
 		panic(err)
 	}
-	defer terminal.Restore(0, oldState)
+	defer terminal.Restore(0, regularState)
 
 	term := terminal.NewTerminal(os.Stdin, "> ")
 	term.AutoCompleteCallback = handleKey
@@ -63,6 +67,7 @@ func main() {
 func handleKey(line string, pos int, key rune) (newLine string, newPos int, ok bool) {
 	if key == '\x03' {
 		fmt.Println()
+		terminal.Restore(0, regularState)
 		os.Exit(0)
 	}
 	return "", 0, false
