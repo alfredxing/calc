@@ -4,20 +4,18 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
-)
 
-import (
 	"github.com/alfredxing/calc/compute"
-)
 
-import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
 // Stores the state of the terminal before making it raw
 var regularState *terminal.State
+var fd = int(os.Stdin.Fd())
 
 func main() {
 	if len(os.Args) > 1 {
@@ -32,11 +30,14 @@ func main() {
 	}
 
 	var err error
-	regularState, err = terminal.MakeRaw(0)
-	if err != nil {
-		panic(err)
+	// Raw mode behaves different on windows in this case.
+	if runtime.GOOS != "windows" {
+		regularState, err = terminal.MakeRaw(fd)
+		if err != nil {
+			panic(err)
+		}
+		defer terminal.Restore(fd, regularState)
 	}
-	defer terminal.Restore(0, regularState)
 
 	term := terminal.NewTerminal(os.Stdin, "> ")
 	term.AutoCompleteCallback = handleKey
@@ -67,7 +68,9 @@ func main() {
 func handleKey(line string, pos int, key rune) (newLine string, newPos int, ok bool) {
 	if key == '\x03' {
 		fmt.Println()
-		terminal.Restore(0, regularState)
+		if regularState != nil {
+			terminal.Restore(fd, regularState)
+		}
 		os.Exit(0)
 	}
 	return "", 0, false
