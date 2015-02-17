@@ -38,7 +38,7 @@ bash$
 calc supports all the standard stuff, and I'm definitely adding more later (also feel free to fork and add your own!)
 
 ##### Operators
-`+`, `-`, `*`, `/`, `^`
+`+`, `-`, `*`, `/`, `^`, `%`
 
 ##### Functions
 `sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `sqrt`, `log`, `lg`, `ln`, `abs`
