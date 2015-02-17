@@ -68,7 +68,6 @@ var (
 			return math.Pow(args[0], args[1])
 		},
 	}
-
 )
 
 func init() {
@@ -77,6 +76,6 @@ func init() {
 	Register(neg)
 	Register(pow)
 	Register(mul)
-    Register(mod)
+	Register(mod)
 	Register(div)
 }
