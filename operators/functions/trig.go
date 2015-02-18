@@ -42,25 +42,25 @@ var (
 		Associativity: operators.L,
 		Args:          1,
 		Operation: func(args []float64) float64 {
-			return 1/math.Tan(args[0])
+			return 1 / math.Tan(args[0])
 		},
 	}
 	sec = &operator.Operator{
-		Name:					 "sec",
-		Precedenc:		 0,
+		Name:          "sec",
+		Precedenc:     0,
 		Associativity: operators.L,
-		Args:					 1,
+		Args:          1,
 		Operation: func(args []float64) float64 {
-			return 1/math.Cos(args[0])
+			return 1 / math.Cos(args[0])
 		},
 	}
 	csc = &operator.Operator{
-		Name:					 "csc",
-		Precedenc:		 0,
+		Name:          "csc",
+		Precedenc:     0,
 		Associativity: operators.L,
-		Args:					 1,
+		Args:          1,
 		Operation: func(args []float64) float64 {
-			return 1/math.Sin(args[0])
+			return 1 / math.Sin(args[0])
 		},
 	}
 	asin = &operators.Operator{
@@ -96,7 +96,7 @@ var (
 		Associativity: operators.L,
 		Args:          1,
 		Operation: func(args []float64) float64 {
-			return (-90*((math.Pi*math.Atan(args[0])/90)-math.Pi))/math.Pi
+			return (-90 * ((math.Pi * math.Atan(args[0]) / 90) - math.Pi)) / math.Pi
 		},
 	}
 	asec = &operators.Operator{
@@ -105,7 +105,7 @@ var (
 		Associativity: operators.L,
 		Args:          1,
 		Operation: func(args []float64) float64 {
-			return math.Acos(1/args[0])
+			return math.Acos(1 / args[0])
 		},
 	}
 	acsc = &operators.Operator{
@@ -114,7 +114,7 @@ var (
 		Associativity: operators.L,
 		Args:          1,
 		Operation: func(args []float64) float64 {
-			return math.Asin(1/args[0])
+			return math.Asin(1 / args[0])
 		},
 	}
 )
