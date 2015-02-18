@@ -1,6 +1,6 @@
 ## calc
 
-[![Build Status](https://travis-ci.org/alfredxing/calc.svg?branch=master)](https://travis-ci.org/alfredxing/calc)
+[![GoDoc](https://godoc.org/github.com/alfredxing/calc?status.svg)](https://godoc.org/github.com/alfredxing/calc) [![Build Status](https://travis-ci.org/alfredxing/calc.svg?branch=master)](https://travis-ci.org/alfredxing/calc)
 
 A simple, fast, and intuitive command-line calculator written in Go.
 
