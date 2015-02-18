@@ -41,7 +41,7 @@ calc supports all the standard stuff, and I'm definitely adding more later (also
 `+`, `-`, `*`, `/`, `^`
 
 ##### Functions
-`sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `sqrt`, `log`, `lg`, `ln`, `abs`
+`sin`, `cos`, `tan`, `cot`, `sec`, `csc`, `asin`, `acos`, `atan`, `acot`, `asec`, `acsc`, `sqrt`, `log`, `lg`, `ln`, `abs`
 
 ##### Constants
 `e`, `pi`, `π`
