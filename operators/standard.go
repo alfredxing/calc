@@ -50,6 +50,15 @@ var (
 			return args[0] / args[1]
 		},
 	}
+	mod = &Operator{
+		Name:          "%",
+		Precedence:    2,
+		Associativity: L,
+		Args:          2,
+		Operation: func(args []float64) float64 {
+			return math.Mod(args[0], args[1])
+		},
+	}
 	pow = &Operator{
 		Name:          "^",
 		Precedence:    3,
@@ -67,5 +76,6 @@ func init() {
 	Register(neg)
 	Register(pow)
 	Register(mul)
+	Register(mod)
 	Register(div)
 }
