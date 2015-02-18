@@ -45,6 +45,7 @@ func main() {
 		if err != nil {
 			if err == io.EOF {
 				// Quit without error on Ctrl^D
+				fmt.Println()
 				break
 			}
 			panic(err)
