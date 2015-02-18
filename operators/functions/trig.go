@@ -47,7 +47,7 @@ var (
 	}
 	sec = &operators.Operator{
 		Name:          "sec",
-		Precedenc:     0,
+		Precedence:     0,
 		Associativity: operators.L,
 		Args:          1,
 		Operation: func(args []float64) float64 {
@@ -56,7 +56,7 @@ var (
 	}
 	csc = &operators.Operator{
 		Name:          "csc",
-		Precedenc:     0,
+		Precedence:     0,
 		Associativity: operators.L,
 		Args:          1,
 		Operation: func(args []float64) float64 {
