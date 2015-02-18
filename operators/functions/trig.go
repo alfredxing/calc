@@ -45,7 +45,7 @@ var (
 			return 1 / math.Tan(args[0])
 		},
 	}
-	sec = &operator.Operator{
+	sec = &operators.Operator{
 		Name:          "sec",
 		Precedenc:     0,
 		Associativity: operators.L,
@@ -54,7 +54,7 @@ var (
 			return 1 / math.Cos(args[0])
 		},
 	}
-	csc = &operator.Operator{
+	csc = &operators.Operator{
 		Name:          "csc",
 		Precedenc:     0,
 		Associativity: operators.L,
