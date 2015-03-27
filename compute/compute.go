@@ -14,19 +14,33 @@ import (
 	"github.com/alfredxing/calc/operators/functions"
 )
 
+var resHistory = []float64{}
+
 func Evaluate(in string) (float64, error) {
 	floats := NewFloatStack()
 	ops := NewStringStack()
 	s := initScanner(in)
 
 	var prev token.Token = token.ILLEGAL
+	var back int = -1
 
 ScanLoop:
 	for {
 		_, tok, lit := s.Scan()
+
+		if lit != "@" && back > -1 {
+			floats.Push(getHistory(back))
+			if prev == token.RPAREN || constants.IsConstant(prev.String()) {
+				evalUnprecedenced("*", ops, floats)
+			}
+			back = -1
+		}
+
 		switch {
 		case tok == token.EOF:
 			break ScanLoop
+		case lit == "@":
+			back += 1
 		case constants.IsConstant(lit):
 			floats.Push(constants.GetValue(lit))
 			if prev == token.RPAREN || isOperand(prev) {
@@ -99,6 +113,7 @@ ScanLoop:
 	if err != nil {
 		return 0, errors.New("Expression could not be parsed!")
 	}
+	pushHistory(res)
 	return res, nil
 }
 
@@ -167,6 +182,14 @@ func parseFloat(lit string) (float64, error) {
 
 func parseOperator(lit string) *operators.Operator {
 	return operators.FindOperatorFromString(lit)
+}
+
+func getHistory(back int) float64 {
+	return resHistory[back]
+}
+
+func pushHistory(res float64) {
+	resHistory = append([]float64{res}, resHistory...)
 }
 
 func initScanner(in string) scanner.Scanner {

@@ -22,6 +22,10 @@ This is probably the mode you'll want to use. It's like the `python` shell or `i
 -15
 > 3pi^2
 29.608813203268074
+> @+1
+30.608813203268074
+> @@@*2
+-30
 > ln(-1)
 NaN
 ```
@@ -45,6 +49,9 @@ calc supports all the standard stuff, and I'm definitely adding more later (also
 
 ##### Constants
 `e`, `pi`, `π`
+
+##### History
+Previous results can be accessed with the `@` symbol. A single `@` returns the result of the last computation, while multiple `@` gets the n<sup>th</sup> last result, where n is the number of `@`s used (for example, `@@` returns the second-last result, `@@@@@` returns the fifth-last result).
 
 ### Why not use ...?
 - Google
