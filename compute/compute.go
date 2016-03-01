@@ -28,7 +28,7 @@ ScanLoop:
 	for {
 		_, tok, lit := s.Scan()
 
-		if lit != "@" && back > -1 {
+		if lit != "@" && back > -1 && len(resHistory) > 0 {
 			floats.Push(getHistory(back))
 			if prev == token.RPAREN || constants.IsConstant(prev.String()) {
 				evalUnprecedenced("*", ops, floats)
