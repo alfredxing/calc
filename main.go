@@ -61,7 +61,7 @@ func main() {
 			term.Write([]byte(fmt.Sprintln("Error: " + err.Error())))
 			continue
 		}
-		term.Write([]byte(fmt.Sprintf("%s\n", strconv.FormatFloat(res, 'G', -1, 64))))
+		term.Write([]byte(fmt.Sprintln(strconv.FormatFloat(res, 'G', -1, 64))))
 	}
 }
 
