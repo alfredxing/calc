@@ -61,7 +61,7 @@ func main() {
 			fmt.Println("Error: " + err.Error())
 			continue
 		}
-		fmt.Printf("%s\n", strconv.FormatFloat(res, 'G', -1, 64))
+		term.Write([]byte(fmt.Sprintf("%s\n", strconv.FormatFloat(res, 'G', -1, 64))))
 	}
 }
 
