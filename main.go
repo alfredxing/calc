@@ -58,10 +58,10 @@ func main() {
 
 		res, err := compute.Evaluate(text)
 		if err != nil {
-			fmt.Println("Error: " + err.Error())
+			term.Write([]byte(fmt.Sprintln("Error: " + err.Error())))
 			continue
 		}
-		fmt.Printf("%s\n", strconv.FormatFloat(res, 'G', -1, 64))
+		term.Write([]byte(fmt.Sprintln(strconv.FormatFloat(res, 'G', -1, 64))))
 	}
 }
 
