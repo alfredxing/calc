@@ -3,6 +3,8 @@ language: go
 go:
   - stable
 
+install: go get ./...
+
 # Output go version being used before running
 before_script:
   - go version
