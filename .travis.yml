@@ -3,7 +3,8 @@ language: go
 go:
   - stable
 
-install:
-  - go get golang.org/x/crypto/ssh/terminal
+# Output go version being used before running
+before_script:
+  - go version
 
 script: go test -v ./...
