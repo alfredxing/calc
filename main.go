@@ -24,7 +24,6 @@ func main() {
 		input := strings.Replace(strings.Join(os.Args[1:], ""), " ", "", -1)
 		res, err := compute.Evaluate(input)
 		if err != nil {
-			fmt.Println("Error: " + err.Error())
 			return
 		}
 		fmt.Printf("%s\n", strconv.FormatFloat(res, 'G', -1, 64))
@@ -45,8 +44,7 @@ func main() {
 		if err != nil {
 			if err == io.EOF {
 				// Quit without error on Ctrl^D
-				fmt.Println()
-				break
+				exit()
 			}
 			panic(err)
 		}
@@ -67,9 +65,14 @@ func main() {
 
 func handleKey(line string, pos int, key rune) (newLine string, newPos int, ok bool) {
 	if key == '\x03' {
-		fmt.Println()
-		terminal.Restore(0, regularState)
-		os.Exit(0)
+		// Quit without error on Ctrl^C
+		exit()
 	}
 	return "", 0, false
+}
+
+func exit() {
+	terminal.Restore(0, regularState)
+	fmt.Println()
+	os.Exit(0)
 }
