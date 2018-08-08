@@ -16,6 +16,11 @@ import (
 
 var resHistory = []float64{}
 
+// ClearHistory removes prior evaluation history used for @ references.
+func ClearHistory() {
+	resHistory = []float64{}
+}
+
 func Evaluate(in string) (float64, error) {
 	floats := NewFloatStack()
 	ops := NewStringStack()
