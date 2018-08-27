@@ -16,6 +16,11 @@ import (
 
 var resHistory = []float64{}
 
+// ClearHistory removes prior evaluation history used for @ references.
+func ClearHistory() {
+	resHistory = []float64{}
+}
+
 func Evaluate(in string) (float64, error) {
 	floats := NewFloatStack()
 	ops := NewStringStack()
@@ -29,7 +34,11 @@ ScanLoop:
 		_, tok, lit := s.Scan()
 
 		if lit != "@" && back > -1 && len(resHistory) > 0 {
-			floats.Push(getHistory(back))
+			if hval, err := getHistory(back); err != nil {
+				return 0, err
+			} else {
+				floats.Push(hval)
+			}
 			if prev == token.RPAREN || constants.IsConstant(prev.String()) {
 				evalUnprecedenced("*", ops, floats)
 			}
@@ -184,8 +193,11 @@ func parseOperator(lit string) *operators.Operator {
 	return operators.FindOperatorFromString(lit)
 }
 
-func getHistory(back int) float64 {
-	return resHistory[back]
+func getHistory(back int) (float64, error) {
+	if back >= len(resHistory) {
+		return 0, errors.New("History underflow")
+	}
+	return resHistory[back], nil
 }
 
 func pushHistory(res float64) {

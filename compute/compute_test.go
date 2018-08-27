@@ -50,6 +50,34 @@ func TestEvaluate(t *testing.T) {
 	}
 }
 
+func TestEvaluateInvalid(t *testing.T) {
+	tests := [][]string{
+		{"/"},
+		{"1/"},
+		{"1("},
+		{")("},
+		{"(()"},
+		{"@"},
+		{"@@"},
+		{"0", "@@"},
+		{"0", "@@@"},
+		{"@@\xa6"},
+	}
+	for i, series := range tests {
+		ClearHistory()
+		var fail error
+		for _, expr := range series {
+			if _, err := Evaluate(expr); err != nil {
+				fail = err
+				break
+			}
+		}
+		if fail == nil {
+			t.Errorf("case %d: expected error, finished successfully", i)
+		}
+	}
+}
+
 func BenchmarkEvaluate(b *testing.B) {
 	tests := []string{
 		"π",
