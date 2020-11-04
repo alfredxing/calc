@@ -1,6 +1,8 @@
 package compute
 
 import (
+	"encoding/binary"
+	"encoding/hex"
 	"errors"
 	"go/scanner"
 	"go/token"
@@ -182,6 +184,29 @@ func isNegation(tok token.Token, prev token.Token) bool {
 }
 
 func parseFloat(lit string) (float64, error) {
+	if len(lit) > 2 {
+		if lit[0:2] == "0x" {
+			// Hex
+			hexBytes, err := hex.DecodeString(lit[2:])
+			if err != nil {
+				return 0, errors.New("Cannot parse hex: " + lit)
+			}
+
+			var number []byte
+
+			diff := 8 - len(hexBytes)
+			if diff < 0 {
+				return 0, errors.New("hex exceeds uint64")
+			}
+
+			for i:=0; i<diff; i++ {
+				number = append(number, 0x00)
+			}
+
+			number = append(number, hexBytes...)
+			return float64(binary.BigEndian.Uint64(number)), nil
+		}
+	}
 	f, err := strconv.ParseFloat(lit, 64)
 	if err != nil {
 		return 0, errors.New("Cannot parse recognized float: " + lit)
