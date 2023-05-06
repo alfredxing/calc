@@ -40,10 +40,10 @@ func main() {
 
 	term := terminal.NewTerminal(os.Stdin, "> ")
 	term.AutoCompleteCallback = handleKey
-	
+
 	format := "G"
 	formatRE := regexp.MustCompile("^format\\((.)\\)$")
-	
+
 	for {
 		text, err := term.ReadLine()
 		if err != nil {
@@ -58,7 +58,7 @@ func main() {
 		if text == "exit" || text == "quit" {
 			break
 		}
-		
+
 		if formatRE.MatchString(text) {
 			matches := formatRE.FindAllStringSubmatch(text, -1)
 			format = matches[0][1]
@@ -70,7 +70,14 @@ func main() {
 			term.Write([]byte(fmt.Sprintln("Error: " + err.Error())))
 			continue
 		}
-		term.Write([]byte(fmt.Sprintln(strconv.FormatFloat(res, format[0], -1, 64))))
+
+		switch format {
+		case "H":
+			term.Write([]byte(fmt.Sprintf("0x%02X\n", int(res))))
+		default:
+			term.Write([]byte(fmt.Sprintln(strconv.FormatFloat(res, format[0], -1, 64))))
+		}
+
 	}
 }
 
