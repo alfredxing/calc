@@ -10,7 +10,7 @@ import (
 )
 
 import (
-	"github.com/alfredxing/calc/compute"
+	"github.com/denysvitali/calc/compute"
 )
 
 import (

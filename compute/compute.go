@@ -11,9 +11,9 @@ import (
 )
 
 import (
-	"github.com/alfredxing/calc/constants"
-	"github.com/alfredxing/calc/operators"
-	"github.com/alfredxing/calc/operators/functions"
+	"github.com/denysvitali/calc/constants"
+	"github.com/denysvitali/calc/operators"
+	"github.com/denysvitali/calc/operators/functions"
 )
 
 var resHistory = []float64{}
