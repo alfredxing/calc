@@ -1,13 +1,13 @@
 ## calc
 
-[![GoDoc](https://godoc.org/github.com/alfredxing/calc?status.svg)](https://godoc.org/github.com/alfredxing/calc) [![Build Status](https://travis-ci.org/alfredxing/calc.svg?branch=master)](https://travis-ci.org/alfredxing/calc)
+[![GoDoc](https://godoc.org/github.com/denysvitali/calc?status.svg)](https://godoc.org/github.com/denysvitali/calc) [![Build Status](https://travis-ci.org/alfredxing/calc.svg?branch=master)](https://travis-ci.org/alfredxing/calc)
 
 A simple, fast, and intuitive command-line calculator written in Go.
 
 ### Install
 Install calc as you would any other Go program:
 ```
-go get github.com/alfredxing/calc
+go get github.com/denysvitali/calc
 ```
 
 ### Usage

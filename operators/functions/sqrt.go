@@ -5,7 +5,7 @@ import (
 )
 
 import (
-	"github.com/alfredxing/calc/operators"
+	"github.com/denysvitali/calc/operators"
 )
 
 var (

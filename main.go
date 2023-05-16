@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
 
 import (
-	"github.com/alfredxing/calc/compute"
+	"github.com/denysvitali/calc/compute"
 )
 
 import (
@@ -39,6 +40,10 @@ func main() {
 
 	term := terminal.NewTerminal(os.Stdin, "> ")
 	term.AutoCompleteCallback = handleKey
+
+	format := "G"
+	formatRE := regexp.MustCompile("^format\\((.)\\)$")
+
 	for {
 		text, err := term.ReadLine()
 		if err != nil {
@@ -54,12 +59,25 @@ func main() {
 			break
 		}
 
+		if formatRE.MatchString(text) {
+			matches := formatRE.FindAllStringSubmatch(text, -1)
+			format = matches[0][1]
+			continue
+		}
+
 		res, err := compute.Evaluate(text)
 		if err != nil {
 			term.Write([]byte(fmt.Sprintln("Error: " + err.Error())))
 			continue
 		}
-		term.Write([]byte(fmt.Sprintln(strconv.FormatFloat(res, 'G', -1, 64))))
+
+		switch format {
+		case "H":
+			term.Write([]byte(fmt.Sprintf("0x%02X\n", int(res))))
+		default:
+			term.Write([]byte(fmt.Sprintln(strconv.FormatFloat(res, format[0], -1, 64))))
+		}
+
 	}
 }
 
